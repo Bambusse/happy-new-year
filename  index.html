@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2024 转换到 2025 - 新年快乐</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    #year-container {
+      font-size: 100px;
+      font-weight: bold;
+      display: flex;
+      position: relative;
+    }
+    .digit {
+      position: relative;
+      display: inline-block;
+      width: 80px;
+      height: 120px;
+      perspective: 400px;
+    }
+    .digit .front,
+    .digit .back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      transform-origin: bottom;
+      transition: transform 0.8s ease-in-out;
+    }
+    .digit .front {
+      transform: rotateX(0deg);
+    }
+    .digit .back {
+      transform: rotateX(-180deg);
+      background-color: transparent;
+    }
+    .digit.flip .front {
+      transform: rotateX(180deg);
+    }
+    .digit.flip .back {
+      transform: rotateX(0deg);
+    }
+    #celebration {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    #message {
+      font-size: 50px;
+      font-weight: bold;
+      margin-top: 20px;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    #message.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="year-container">
+    <div class="digit">
+      <div class="front">2</div>
+      <div class="back">2</div>
+    </div>
+    <div class="digit">
+      <div class="front">0</div>
+      <div class="back">0</div>
+    </div>
+    <div class="digit">
+      <div class="front">2</div>
+      <div class="back">2</div>
+    </div>
+    <div class="digit" id="last-digit">
+      <div class="front">4</div>
+      <div class="back">5</div>
+    </div>
+  </div>
+  <canvas id="celebration"></canvas>
+  <div id="message">新年快乐！</div>
+
+  <script>
+    const lastDigit = document.getElementById('last-digit');
+    const message = document.getElementById('message');
+    const canvas = document.getElementById('celebration');
+    const ctx = canvas.getContext('2d');
+
+    // Setup canvas
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particles = [];
+
+    function createParticles() {
+      for (let i = 0; i < 200; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          vx: Math.random() * 4 - 2,
+          vy: Math.random() * 4 - 2,
+          size: Math.random() * 5 + 2,
+          color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+        });
+      }
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((particle, index) => {
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fillStyle = particle.color;
+        ctx.fill();
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.size *= 0.98;
+        if (particle.size < 0.5) particles.splice(index, 1);
+      });
+    }
+
+    function animateParticles() {
+      drawParticles();
+      if (particles.length > 0) {
+        requestAnimationFrame(animateParticles);
+      }
+    }
+
+    // Trigger flip animation
+    setTimeout(() => {
+      lastDigit.classList.add('flip');
+    }, 1000);
+
+    // Show particles and message
+    setTimeout(() => {
+      createParticles();
+      animateParticles();
+      message.classList.add('visible');
+    }, 2000);
+  </script>
+</body>
+</html>
